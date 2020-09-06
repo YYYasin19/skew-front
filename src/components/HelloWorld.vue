@@ -1,5 +1,9 @@
 <template>
   <div class="hello">
+    <button @click="login">
+      Login
+    </button>
+
     <h1>{{ msg }}</h1>
     <p>
       For a guide and recipes on how to configure / customize this project,<br />
@@ -107,6 +111,66 @@ export default {
   name: "HelloWorld",
   props: {
     msg: String
+  },
+  data() {
+    return {
+      client_id: "f4233a4c37b445d08eef707987b11ac8",
+      base_url: "https://accounts.spotify.com/authorize",
+      redirect_uri: "http://localhost:8080/"
+    };
+  },
+
+  mounted() {
+    this.token = window.location.hash
+      .substr(1)
+      .split("&")[0]
+      .split("=")[1];
+    // this.token = "TOKEN IS HERE";
+    if (this.token) {
+      console.log(this.token);
+
+      window.opener.spotifyCallback(this.token);
+    }
+  },
+  methods: {
+    /* deprecated */
+    loadSpotifyAuth() {
+      const params = new URLSearchParams({
+        client_id: this.client_id,
+        response_type: "token",
+        redirect_uri: this.redirect_uri
+      });
+
+      //let token = "BQDm1fE3mJzvAFfbNdpjrlUyh3Dwmkh1FEygkrryttN84NAmaAGLufYh4PvfxgEXL0RdTdUadjrnQhz338XzuToXp6l6fWSFCGBv0VF81mU5VMqusftq-6MnxTHX8K5KzvM3IfbRkub3DzIH";
+      let authUrl = `${this.base_url}?${params.toString()}`;
+      window.location.href = authUrl;
+    },
+
+    login() {
+      let popup = window.open(
+        `https://accounts.spotify.com/authorize?client_id=${this.client_id}&response_type=token&redirect_uri=${this.redirect_uri}&show_dialog=true`,
+        "Login with Spotify",
+        "width=800,height=600"
+      );
+
+      window.spotifyCallback = payload => {
+        popup.close();
+
+        // fetches data
+        fetch("https://api.spotify.com/v1/me", {
+          headers: {
+            Authorization: `Bearer ${payload}`
+          }
+        })
+          .then(response => {
+            return response.json();
+          })
+          .then(data => {
+            // here we get the user data
+            this.msg = data;
+          });
+      };
+    }
   }
 };
 </script>
