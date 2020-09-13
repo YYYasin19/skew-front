@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Join from "../views/Join.vue";
+import Create from "../views/Create.vue";
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,11 @@ const routes = [
     path: "/join",
     name: "Join",
     component: Join
+  },
+  {
+    path: "/create",
+    name: "Create",
+    component: Create
   }
 ];
 

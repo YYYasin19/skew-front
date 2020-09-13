@@ -19,16 +19,12 @@
               </a>
             </div>
             <div v-else>
-              <a
-                class="button is-dark"
-                tag="router-link"
-                :to="{ path: '/join' }"
-              >
+              <b-button outlined type="is-primary" tag="router-link" to="/join">
                 Join a session
-              </a>
-              <a class="button is-primary">
+              </b-button>
+              <b-button tag="router-link" to="/create" type="is-primary">
                 Create your own
-              </a>
+              </b-button>
             </div>
           </div>
         </b-navbar-item>
