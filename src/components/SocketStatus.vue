@@ -237,12 +237,7 @@ export default {
         session_name: this.newSession.sessionName
       });
     },
-    voteSong(uri) {
-      this.$socket.emit("update_vote", {
-        token: this.$store.state.sessionAuthentication.token,
-        uri: uri
-      });
-    },
+
     sendMessage() {
       let msg = this.sessionMessage;
 
