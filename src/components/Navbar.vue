@@ -19,7 +19,11 @@
               </a>
             </div>
             <div v-else>
-              <a class="button is-dark">
+              <a
+                class="button is-dark"
+                tag="router-link"
+                :to="{ path: '/join' }"
+              >
                 Join a session
               </a>
               <a class="button is-primary">
