@@ -4,6 +4,10 @@ import router from "./router";
 import store from "./store";
 import VueSocketIO from "vue-socket.io";
 import SpotifyWebApi from "spotify-web-api-js";
+import Buefy from "buefy";
+import "buefy/dist/buefy.css";
+
+Vue.use(Buefy);
 
 Vue.prototype.$spotifyApi = new SpotifyWebApi();
 Vue.config.productionTip = false;
