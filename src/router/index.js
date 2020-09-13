@@ -2,6 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
+import Join from "../views/Join.vue";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -23,6 +25,11 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard
+  },
+  {
+    path: "/join",
+    name: "Join",
+    component: Join
   }
 ];
 
