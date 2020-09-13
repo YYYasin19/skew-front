@@ -3,106 +3,6 @@
     <button @click="login">
       Login
     </button>
-
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-          target="_blank"
-          rel="noopener"
-          >babel</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router"
-          target="_blank"
-          rel="noopener"
-          >router</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex"
-          target="_blank"
-          rel="noopener"
-          >vuex</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-          target="_blank"
-          rel="noopener"
-          >eslint</a
-        >
-      </li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li>
-        <a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-      </li>
-      <li>
-        <a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-          >Forum</a
-        >
-      </li>
-      <li>
-        <a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-          >Community Chat</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-          >Twitter</a
-        >
-      </li>
-      <li>
-        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-      </li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li>
-        <a href="https://router.vuejs.org" target="_blank" rel="noopener"
-          >vue-router</a
-        >
-      </li>
-      <li>
-        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-devtools#vue-devtools"
-          target="_blank"
-          rel="noopener"
-          >vue-devtools</a
-        >
-      </li>
-      <li>
-        <a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-          >vue-loader</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-          rel="noopener"
-          >awesome-vue</a
-        >
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -114,38 +14,106 @@ export default {
   },
   data() {
     return {
-      client_id: "f4233a4c37b445d08eef707987b11ac8",
-      base_url: "https://accounts.spotify.com/authorize",
-      redirect_uri: "http://localhost:8080/"
+      spotify_auth: {
+        client_id: "f4233a4c37b445d08eef707987b11ac8",
+        base_url: "https://accounts.spotify.com/authorize",
+        redirect_uri: "http://localhost:8080/",
+        token: ""
+      },
+      socketMessage: "",
+      roomNumber: "",
+      eventMessages: [{ message: "Start of Component", timestamp: "Start" }],
+      loggedIn: false,
+      session: ""
     };
   },
+  sockets: {
+    connect: function() {
+      this.eventMessages.push({
+        message: "Conncected",
+        timestamp: new Date()
+      });
 
+      // if we have a session: try to login at every connect
+      if (this.session) {
+        // login registers us to server events
+        this.socketLogin();
+      }
+    },
+    disconnect: function() {
+      this.eventMessages.push({
+        message: "DISconnected",
+        timestamp: new Date()
+      });
+      this.loggedIn = false;
+    },
+    "test-response": function(data) {
+      let socketBox = document.getElementById("socket-messages");
+      let div = document.createElement("div");
+      div.innerHTML = data["data"];
+      socketBox.append(div);
+    },
+    "message-response": function(data) {
+      let socketBox = document.getElementById("socket-messages");
+      let div = document.createElement("div");
+      div.innerHTML = `${data["client_id"]}: ${data["data"]}`;
+      socketBox.append(div);
+    }
+  },
   mounted() {
-    this.token = window.location.hash
+    this.spotify_auth.token = window.location.hash
       .substr(1)
       .split("&")[0]
       .split("=")[1];
-    // this.token = "TOKEN IS HERE";
-    if (this.token) {
-      console.log(this.token);
 
-      window.opener.spotifyCallback(this.token);
+    // if the token exists, print it
+    if (this.spotify_auth.token) {
+      console.log(this.spotify_auth.token);
+
+      window.opener.spotifyCallback(this.spotify_auth.token);
     }
   },
   methods: {
-    /* deprecated */
-    loadSpotifyAuth() {
-      const params = new URLSearchParams({
-        client_id: this.client_id,
-        response_type: "token",
-        redirect_uri: this.redirect_uri
+    socketLogin() {
+      let sessionId = "";
+      let name = "";
+      let password = "";
+
+      // send server these informations so they take us in the room
+      this.$socket.emit("join_session", {
+        session_id: sessionId,
+        password: password,
+        name: name
       });
 
-      //let token = "BQDm1fE3mJzvAFfbNdpjrlUyh3Dwmkh1FEygkrryttN84NAmaAGLufYh4PvfxgEXL0RdTdUadjrnQhz338XzuToXp6l6fWSFCGBv0VF81mU5VMqusftq-6MnxTHX8K5KzvM3IfbRkub3DzIH";
-      let authUrl = `${this.base_url}?${params.toString()}`;
-      window.location.href = authUrl;
+      // update our app state
+      this.loggedIn = true;
     },
+    createSession() {
+      let name = "";
+      let password = "";
 
+      this.$socket.emit("create_session", {
+        password: password,
+        name: name
+      });
+    },
+    joinRoom() {
+      this.$socket.emit("join-room", {
+        room_id: this.roomNumber
+      });
+    },
+    sendMessage() {
+      this.$socket.emit("client-message", this.socketMessage);
+    },
+    sendMessageRoom() {
+      this.$socket.emit("client-message-room", {
+        data: this.socketMessage
+      });
+    },
+    /**
+     * performs the spotify login operation
+     */
     login() {
       let popup = window.open(
         `https://accounts.spotify.com/authorize?client_id=${this.client_id}&response_type=token&redirect_uri=${this.redirect_uri}&show_dialog=true`,
@@ -153,10 +121,15 @@ export default {
         "width=800,height=600"
       );
 
+      // this is called, when to login was successful
       window.spotifyCallback = payload => {
+        // close the login popup
         popup.close();
 
-        // fetches data
+        // store spotify data in vuex store
+        this.$store.dispatch("updateSpotifyToken", payload);
+
+        // fetch data
         fetch("https://api.spotify.com/v1/me", {
           headers: {
             Authorization: `Bearer ${payload}`
