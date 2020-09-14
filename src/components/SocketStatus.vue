@@ -178,9 +178,12 @@ export default {
       }
     },
     error_message: function(data) {
-      this.errorMessages.push({
-        message: data.message,
-        timestamp: new Date()
+      this.$buefy.notification.open({
+        duration: 2000,
+        message: `${data.message}`,
+        position: "is-bottom",
+        type: "is-danger",
+        hasIcon: true
       });
     }
   },
