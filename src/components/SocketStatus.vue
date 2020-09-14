@@ -56,25 +56,19 @@
       <h3>Session Messages</h3>
       {{ session.messages }}
     </div>
-    <div id="session-songs-container">
-      <h3>Session Songs</h3>
-      <div v-for="song in session.songs" :key="song.song_data.uri">
-        {{ song.song_data.name }} ({{ song.upvote_users }})
-        <button @click="voteSong(song.song_data.uri)">
-          Vote
-        </button>
-        <img :src="song.song_data.album.images[1].url" alt="Alt" />
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import { socketActions } from "../mixins";
+import Song from "./Song";
 
 export default {
   name: "SocketStatus",
+  components: {
+    Song
+  },
   mixins: [socketActions],
   data() {
     return {

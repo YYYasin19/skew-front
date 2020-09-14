@@ -1,7 +1,7 @@
 <template>
   <div class="container is-fluid">
-    <div class="columns">
-      <div class="column is-narrow">
+    <div class="columns is-vcentered">
+      <div class="column is-narrow ">
         <div v-if="session.current_playback">
           <a
             :href="session.current_playback.item.external_urls.spotify"
@@ -23,10 +23,10 @@
         </div>
       </div>
       <div class="column">
-        <div id="current-playback-metadata" class="box has-text-justified">
+        <div class="box has-text-justified cpb-data">
           <div v-if="session.current_playback">
             <div class="title">{{ session.current_playback.item.name }}</div>
-            <div class="subtitle">
+            <div class="subtitle artist-names">
               <span
                 v-for="artist in session.current_playback.item.artists"
                 :key="artist.name"
@@ -34,6 +34,11 @@
                 {{ artist.name }}
               </span>
             </div>
+            <b-progress
+              type="is-success"
+              :value="songProgress"
+              size="is-small"
+            ></b-progress>
           </div>
           <div v-else>
             <div>No data</div>
@@ -49,14 +54,20 @@ import { mapState } from "vuex";
 export default {
   name: "CurrentPlayback",
   computed: {
-    ...mapState(["session"])
+    ...mapState(["session"]),
+    songProgress: function() {
+      return Math.round(
+        (this.session.current_playback.progress_ms /
+          this.session.current_playback.item.duration_ms) *
+          100
+      );
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-#current-playback-metadata {
-  height: 120px;
+.cpb-data {
 }
 
 .cpb-image {

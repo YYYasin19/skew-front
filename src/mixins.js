@@ -13,7 +13,7 @@ export const socketActions = {
         }
 
         this.$socket.emit("update_session", {
-          token: this.sessionAuthData.token,
+          token: this.$store.state.sessionAuthentication.token,
           session: this.$store.state.session
         });
       }
