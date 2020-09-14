@@ -17,6 +17,7 @@
           No playback information currently
         </div>
       </div>
+      <CurrentPlayback></CurrentPlayback>
     </div>
     <hr />
     <div id="spotify-data">
@@ -44,8 +45,13 @@
 <script>
 import { socketActions } from "../mixins";
 import { mapState } from "vuex";
+import CurrentPlayback from "./CurrentPlayback";
+
 export default {
   name: "SpotifyStatus",
+  components: {
+    CurrentPlayback
+  },
   mixins: [socketActions],
   data() {
     return {
