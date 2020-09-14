@@ -62,13 +62,10 @@
 <script>
 import { mapState } from "vuex";
 import { socketActions } from "../mixins";
-import Song from "./Song";
 
 export default {
   name: "SocketStatus",
-  components: {
-    Song
-  },
+  components: {},
   mixins: [socketActions],
   data() {
     return {
