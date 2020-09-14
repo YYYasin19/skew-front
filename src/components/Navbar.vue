@@ -39,7 +39,7 @@ import { mapState } from "vuex";
 export default {
   name: "Navbar",
   computed: {
-    ...mapState["session"]
+    ...mapState(["session"])
   }
 };
 </script>
