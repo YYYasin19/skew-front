@@ -18,7 +18,22 @@ export default {
   components: {
     Navbar
   },
-  created() {}
+  created() {},
+  sockets: {
+    updated_session: function(data) {
+      if (typeof data == "string") {
+        data = JSON.parse(data);
+      }
+      console.log("Socket: updated_session", data);
+
+      let sessionData = data;
+      if (sessionData) {
+        console.log("Socket:updated_session", data);
+        this.sessionData = sessionData;
+        this.$store.dispatch("setSessionData", sessionData);
+      }
+    }
+  }
 };
 </script>
 
