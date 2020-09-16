@@ -5,6 +5,8 @@ import Dashboard from "../views/Dashboard.vue";
 import Join from "../views/Join.vue";
 import Create from "../views/Create.vue";
 
+import Test from "../views/Test.vue";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -36,6 +38,11 @@ const routes = [
     path: "/create",
     name: "Create",
     component: Create
+  },
+  {
+    path: "/test",
+    name: "Test",
+    component: Test
   }
 ];
 
